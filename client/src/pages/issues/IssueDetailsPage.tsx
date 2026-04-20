@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
+  ArrowLeft,
+  CalendarDays,
+  Pencil,
+  CheckCircle2,
+  Archive,
+  Trash2,
+  UserRound,
+  CircleAlert,
+} from "lucide-react";
+import {
   deleteIssueApi,
   getIssueByIdApi,
   updateIssueApi,
@@ -75,81 +85,125 @@ const IssueDetailsPage = () => {
 
   if (loading) return <Loader />;
 
-  if (!issue) return <p className="text-red-500">Issue not found.</p>;
+  if (!issue) {
+    return (
+      <div className="mx-auto max-w-5xl">
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Issue not found.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
-      <div className="mx-auto max-w-4xl space-y-4">
-        <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-start md:justify-between">
-          <div className="min-w-0 flex-1">
-            <div className="mb-3 flex flex-wrap gap-2">
-              <IssueStatusBadge status={issue.status} />
-              <PriorityBadge priority={issue.priority} />
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700">
-                {issue.severity}
-              </span>
+      <div className="mx-auto max-w-5xl space-y-6">
+        <Link
+          to="/issues"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Issues
+        </Link>
+
+        <section className="rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 text-white shadow-lg md:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="mb-3 flex flex-wrap gap-2">
+                <IssueStatusBadge status={issue.status} />
+                <PriorityBadge priority={issue.priority} />
+                <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-xs font-semibold text-slate-200">
+                  {issue.severity}
+                </span>
+              </div>
+
+              <h2 className="text-3xl font-bold tracking-tight">{issue.title}</h2>
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                {issue.description}
+              </p>
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900">{issue.title}</h2>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">
-              {issue.description}
-            </p>
-          </div>
+            <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-slate-200">
+              <div className="flex items-start gap-3">
+                <UserRound className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="font-medium text-white">Assigned To</p>
+                  <p>{issue.assignedTo || "Unassigned"}</p>
+                </div>
+              </div>
 
-          <div className="w-full max-w-xs rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
-            <p>
-              <span className="font-semibold">Assigned To:</span>{" "}
-              {issue.assignedTo || "Unassigned"}
-            </p>
-            <p className="mt-2">
-              <span className="font-semibold">Created:</span>{" "}
-              {new Date(issue.createdAt).toLocaleString()}
-            </p>
-            <p className="mt-2">
-              <span className="font-semibold">Updated:</span>{" "}
-              {new Date(issue.updatedAt).toLocaleString()}
-            </p>
+              <div className="mt-4 flex items-start gap-3">
+                <CalendarDays className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="font-medium text-white">Created</p>
+                  <p>{new Date(issue.createdAt).toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-start gap-3">
+                <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="font-medium text-white">Last Updated</p>
+                  <p>{new Date(issue.updatedAt).toLocaleString()}</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
         {apiError && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm">
             {apiError}
-          </p>
+          </div>
         )}
 
-        <div className="flex flex-wrap gap-3">
-          <Link
-            to={`/issues/${issue._id}/edit`}
-            className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800"
-          >
-            Edit Issue
-          </Link>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Actions</h3>
+              <p className="text-sm text-slate-500">
+                Manage the issue lifecycle and update the record.
+              </p>
+            </div>
 
-          <button
-            onClick={() => setModalAction("resolve")}
-            disabled={actionLoading}
-            className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-60"
-          >
-            Mark Resolved
-          </button>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to={`/issues/${issue._id}/edit`}
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800"
+              >
+                <Pencil className="h-4 w-4" />
+                Edit Issue
+              </Link>
 
-          <button
-            onClick={() => setModalAction("close")}
-            disabled={actionLoading}
-            className="rounded-xl border border-slate-300 bg-slate-100 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-60"
-          >
-            Mark Closed
-          </button>
+              <button
+                onClick={() => setModalAction("resolve")}
+                disabled={actionLoading}
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-60"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                Mark Resolved
+              </button>
 
-          <button
-            onClick={() => setModalAction("delete")}
-            disabled={actionLoading}
-            className="rounded-xl border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-100 disabled:opacity-60"
-          >
-            Delete Issue
-          </button>
-        </div>
+              <button
+                onClick={() => setModalAction("close")}
+                disabled={actionLoading}
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-slate-100 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-60"
+              >
+                <Archive className="h-4 w-4" />
+                Mark Closed
+              </button>
+
+              <button
+                onClick={() => setModalAction("delete")}
+                disabled={actionLoading}
+                className="inline-flex items-center gap-2 rounded-xl border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-100 disabled:opacity-60"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Issue
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
 
       <Modal
