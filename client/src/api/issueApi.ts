@@ -11,7 +11,13 @@ export interface GetIssuesParams {
 }
 
 export const getIssuesApi = async (params: GetIssuesParams) => {
-  const response = await api.get("/issues", { params });
+  const cleanedParams = Object.fromEntries(
+    Object.entries(params).filter(
+      ([, value]) => value !== "" && value !== undefined && value !== null
+    )
+  );
+
+  const response = await api.get("/issues", { params: cleanedParams });
   return response.data;
 };
 
@@ -30,7 +36,10 @@ export const createIssueApi = async (payload: IssueFormValues) => {
   return response.data;
 };
 
-export const updateIssueApi = async (id: string, payload: Partial<IssueFormValues>) => {
+export const updateIssueApi = async (
+  id: string,
+  payload: Partial<IssueFormValues>
+) => {
   const response = await api.put(`/issues/${id}`, payload);
   return response.data;
 };

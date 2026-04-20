@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import IssueForm from "../../components/issues/IssueForm";
 import { createIssueApi } from "../../api/issueApi";
 import type { IssueFormValues } from "../../features/issues/issueTypes";
@@ -14,9 +15,12 @@ const CreateIssuePage = () => {
       setIsSubmitting(true);
       setApiError("");
       await createIssueApi(values);
+      toast.success("Issue created successfully");
       navigate("/issues");
     } catch (error: any) {
-      setApiError(error?.response?.data?.message || "Failed to create issue");
+      const message = error?.response?.data?.message || "Failed to create issue";
+      setApiError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

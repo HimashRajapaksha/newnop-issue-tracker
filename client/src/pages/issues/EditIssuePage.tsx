@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import { getIssueByIdApi, updateIssueApi } from "../../api/issueApi";
 import Loader from "../../components/common/Loader";
 import IssueForm from "../../components/issues/IssueForm";
@@ -20,7 +21,9 @@ const EditIssuePage = () => {
         const response = await getIssueByIdApi(id!);
         setIssue(response.data);
       } catch (error: any) {
-        setApiError(error?.response?.data?.message || "Failed to load issue");
+        const message = error?.response?.data?.message || "Failed to load issue";
+        setApiError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -34,9 +37,12 @@ const EditIssuePage = () => {
       setIsSubmitting(true);
       setApiError("");
       await updateIssueApi(id!, values);
+      toast.success("Issue updated successfully");
       navigate(`/issues/${id}`);
     } catch (error: any) {
-      setApiError(error?.response?.data?.message || "Failed to update issue");
+      const message = error?.response?.data?.message || "Failed to update issue";
+      setApiError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

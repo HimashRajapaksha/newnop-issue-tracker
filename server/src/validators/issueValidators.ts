@@ -76,27 +76,27 @@ export const deleteIssueValidator = [
 
 export const issueQueryValidator = [
   query("page")
-    .optional()
+    .optional({ values: "falsy" })
     .isInt({ min: 1 })
     .withMessage("Page must be a positive number"),
 
   query("limit")
-    .optional()
+    .optional({ values: "falsy" })
     .isInt({ min: 1, max: 100 })
     .withMessage("Limit must be between 1 and 100"),
 
   query("status")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(["Open", "In Progress", "Resolved", "Closed"])
     .withMessage("Invalid status"),
 
   query("priority")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(["Low", "Medium", "High"])
     .withMessage("Invalid priority"),
 
   query("severity")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(["Minor", "Major", "Critical"])
     .withMessage("Invalid severity"),
 ];
